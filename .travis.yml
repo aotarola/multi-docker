@@ -1,0 +1,37 @@
+language: generic
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t aotarola/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true aotarola/react-test npm run test
+
+after_success:
+  - docker build -t aotarola/multi-client -f ./client/Dockerfile ./client
+  - docker build -t aotarola/multi-server -f ./server/Dockerfile ./server
+  - docker build -t aotarola/multi-worker -f ./worker/Dockerfile ./worker
+  - docker build -t aotarola/multi-nginx -f ./nginx/Dockerfile ./nginx
+
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --pasword-stdin
+
+  - docker push aotarola/multi-client
+  - docker push aotarola/multi-server
+  - docker push aotarola/multi-worker
+  - docker push aotarola/multi-nginx
+
+deploy:
+  provider: elasticbeanstalk
+  region: "us-east-2"
+  app: "docker-react"
+  env: "DockerReact-env"
+  bucket_name: "elasticbeanstalk-us-east-2-783305335547"
+  bucket_path: "docker-react"
+  on:
+    branch: master
+  access_key_id:
+    secure: $AWS_ACCESS_KEY
+  secret_access_key:
+    secure: "$AWS_SECRET_KEY"
