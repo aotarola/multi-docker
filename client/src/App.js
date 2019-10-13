@@ -8,7 +8,7 @@ function App() {
   return (
     <Router>
     <div className="App">
-        <Link to="/">Home</Link>
+        <Link to="/">Fib calculator</Link>
         <Link to="/otherpage">Other Page</Link>
       <div>
         <Route exact path="/" component={Fib} />
