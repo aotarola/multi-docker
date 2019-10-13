@@ -18,8 +18,24 @@
     {
       "name": "worker",
       "image": "aotarola/multi-worker",
-      "essential": true,
+      "essential": false,
       "memory": 128
+    },
+    {
+      "name": "nginx",
+      "image": "aotarola/multi-nginx",
+      "essential": true,
+      "memory": 128,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 80
+        }
+      ],
+      "links": [
+        "client",
+        "server"
+      ]
     }
   ]
 }
